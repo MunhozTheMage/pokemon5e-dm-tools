@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/pokemon5e-dm-tools/static/css/main.76d399db.css",
-    "main.js": "/pokemon5e-dm-tools/static/js/main.7aa47fa9.js",
+    "main.js": "/pokemon5e-dm-tools/static/js/main.f3cb5fb9.js",
     "index.html": "/pokemon5e-dm-tools/index.html",
     "main.76d399db.css.map": "/pokemon5e-dm-tools/static/css/main.76d399db.css.map",
-    "main.7aa47fa9.js.map": "/pokemon5e-dm-tools/static/js/main.7aa47fa9.js.map"
+    "main.f3cb5fb9.js.map": "/pokemon5e-dm-tools/static/js/main.f3cb5fb9.js.map"
   },
   "entrypoints": [
     "static/css/main.76d399db.css",
-    "static/js/main.7aa47fa9.js"
+    "static/js/main.f3cb5fb9.js"
   ]
 }

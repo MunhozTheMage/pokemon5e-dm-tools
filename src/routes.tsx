@@ -1,9 +1,14 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Landing } from "./pages/Landing";
 
-export const routes = createBrowserRouter([
+export const routes = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <Landing />,
+    },
+  ],
   {
-    path: "/",
-    element: <Landing />,
-  },
-]);
+    basename: "/pokemon5e-dm-tools",
+  }
+);

@@ -468,7 +468,7 @@ export const Landing = () => {
 
   const filteredPokemons = useMemo(() => {
     return allPokemons.filter((p) =>
-      p.name.toLowerCase().includes(searchValue)
+      p.name.toLowerCase().includes(searchValue.toLowerCase())
     );
   }, [allPokemons, searchValue]);
 

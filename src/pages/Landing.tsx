@@ -84,6 +84,15 @@ const PokemonStatblockDialog: ComponentType<
 
   const { data: pokemon } = usePokemonQuery(basicPokemon);
 
+  const skills = useMemo(
+    () => pokemon && proficientSkill(pokemon.skills),
+    [pokemon]
+  );
+  const savingThrows = useMemo(
+    () => pokemon && proficientSavingThrows(pokemon.savingThrows),
+    [pokemon]
+  );
+
   const typeMultipliers = useMemo(
     () =>
       pokemon?.types[0]
@@ -301,51 +310,57 @@ const PokemonStatblockDialog: ComponentType<
               </Grid>
             </Grid>
 
-            <Divider sx={{ marginBlock: "20px" }} />
+            {((skills?.length || 0) > 0 || (savingThrows?.length || 0) > 0) && (
+              <>
+                <Divider sx={{ marginBlock: "20px" }} />
 
-            <Typography variant="h6" gutterBottom>
-              Proficiencies
-            </Typography>
+                <Typography variant="h6" gutterBottom>
+                  Proficiencies
+                </Typography>
 
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <Info
-                  label="Skills"
-                  content={
-                    <>
-                      {proficientSkill(pokemon.skills).map((skill) => (
-                        <Chip
-                          key={skill}
-                          label={skill}
-                          size="small"
-                          sx={{ marginRight: "5px", marginBottom: "5px" }}
-                        />
-                      ))}
-                    </>
-                  }
-                />
-              </Grid>
+                <Grid container spacing={2}>
+                  {skills && skills.length > 0 && (
+                    <Grid item xs={6}>
+                      <Info
+                        label="Skills"
+                        content={
+                          <>
+                            {skills.map((skill) => (
+                              <Chip
+                                key={skill}
+                                label={skill}
+                                size="small"
+                                sx={{ marginRight: "5px", marginBottom: "5px" }}
+                              />
+                            ))}
+                          </>
+                        }
+                      />
+                    </Grid>
+                  )}
 
-              <Grid item xs={6}>
-                <Info
-                  label="Saving Throws"
-                  content={
-                    <>
-                      {proficientSavingThrows(pokemon.savingThrows).map(
-                        (attr) => (
-                          <Chip
-                            key={attr}
-                            label={attr}
-                            size="small"
-                            sx={{ marginRight: "5px", marginBottom: "5px" }}
-                          />
-                        )
-                      )}
-                    </>
-                  }
-                />
-              </Grid>
-            </Grid>
+                  {savingThrows && savingThrows.length > 0 && (
+                    <Grid item xs={6}>
+                      <Info
+                        label="Saving Throws"
+                        content={
+                          <>
+                            {savingThrows.map((attr) => (
+                              <Chip
+                                key={attr}
+                                label={attr}
+                                size="small"
+                                sx={{ marginRight: "5px", marginBottom: "5px" }}
+                              />
+                            ))}
+                          </>
+                        }
+                      />
+                    </Grid>
+                  )}
+                </Grid>
+              </>
+            )}
           </Box>
 
           <Divider

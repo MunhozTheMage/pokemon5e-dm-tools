@@ -76,107 +76,113 @@ const pokemonData = _pokemonData as { [k: string]: string };
 const pokemonFromDataJson = (
   pokemon: BasicPokemon,
   data: any
-): PokemonStatBlock => ({
-  ...pokemon,
-  sr: data["SR"],
-  types: data["Type"],
-  abilities: [
-    ...data["Abilities"].map((ability: string) => ({
-      ability,
-      isHidden: false,
-    })),
-    ...(data["Hidden Ability"]
-      ? [{ ability: data["Hidden Ability"], isHidden: true }]
-      : []),
-  ],
-  evolutions: data["Evolve"] ? [{ pokemon: data["Evolve"] }] : [],
-  movement: {
-    walk: data["WSp"] || 0,
-    burrow: data["Burrowing Speed"] || 0,
-    climb: data["Climbing Speed"] || 0,
-    fly: data["Fsp"] || 0,
-    swim: data["Ssp"] || 0,
-  },
-  stats: {
-    hp: data["HP"],
-    ac: data["AC"],
-    cha: data["attributes"]["CHA"],
-    con: data["attributes"]["CON"],
-    dex: data["attributes"]["DEX"],
-    int: data["attributes"]["INT"],
-    str: data["attributes"]["STR"],
-    wis: data["attributes"]["WIS"],
-  },
-  hitDie: data["Hit Dice"],
-  moves: [
-    ...pipe(
-      (data["Moves"]["Level"] || []) as { [k: string]: string[] },
-      (movesByLevel) => toPairs(movesByLevel),
-      (movesByLevel) =>
-        map(movesByLevel, ([level, moves]) =>
-          map(moves, (move) => ({
-            move,
-            learning: { method: "level", level: Number(level) },
-          }))
-        ),
-      (moves) => flatten(moves)
-    ),
+): PokemonStatBlock => {
+  const savingThrows = (data["saving_throws"] || []) as string[];
 
-    ...pipe((data["Moves"]["Starting Moves"] || []) as string[], (moves) =>
-      map(moves, (move) => ({ move, learning: { method: "level", level: 0 } }))
-    ),
-
-    ...pipe((data["Moves"]["egg"] || []) as string[], (moves) =>
-      map(moves, (move) => ({ move, learning: { method: "egg" } }))
-    ),
-  ],
-  skills: pipe(
-    [
-      "Acrobatics",
-      "Animal Handling",
-      "Arcana",
-      "Athletics",
-      "Deception",
-      "History",
-      "Insight",
-      "Intimidation",
-      "Investigation",
-      "Medicine",
-      "Nature",
-      "Perception",
-      "Performance",
-      "Persuasion",
-      "Religion",
-      "Sleight Of Hand",
-      "Stealth",
-      "Survival",
+  return {
+    ...pokemon,
+    sr: data["SR"],
+    types: data["Type"],
+    abilities: [
+      ...data["Abilities"].map((ability: string) => ({
+        ability,
+        isHidden: false,
+      })),
+      ...(data["Hidden Ability"]
+        ? [{ ability: data["Hidden Ability"], isHidden: true }]
+        : []),
     ],
-    (skills) =>
-      map(
-        skills,
-        (skill) =>
-          [
-            camelize(skill),
-            (data["Skill"] as string[]).find(
-              (proficientSkill) =>
-                proficientSkill.toLowerCase() === skill.toLowerCase()
-            ) !== undefined,
-          ] as [string, boolean]
+    evolutions: data["Evolve"] ? [{ pokemon: data["Evolve"] }] : [],
+    movement: {
+      walk: data["WSp"] || 0,
+      burrow: data["Burrowing Speed"] || 0,
+      climb: data["Climbing Speed"] || 0,
+      fly: data["Fsp"] || 0,
+      swim: data["Ssp"] || 0,
+    },
+    stats: {
+      hp: data["HP"],
+      ac: data["AC"],
+      cha: data["attributes"]["CHA"],
+      con: data["attributes"]["CON"],
+      dex: data["attributes"]["DEX"],
+      int: data["attributes"]["INT"],
+      str: data["attributes"]["STR"],
+      wis: data["attributes"]["WIS"],
+    },
+    hitDie: data["Hit Dice"],
+    moves: [
+      ...pipe(
+        (data["Moves"]["Level"] || []) as { [k: string]: string[] },
+        (movesByLevel) => toPairs(movesByLevel),
+        (movesByLevel) =>
+          map(movesByLevel, ([level, moves]) =>
+            map(moves, (move) => ({
+              move,
+              learning: { method: "level", level: Number(level) },
+            }))
+          ),
+        (moves) => flatten(moves)
       ),
-    (skillPairs) => fromPairs(skillPairs)
-  ) as PokemonStatBlock["skills"],
-  savingThrows: {
-    // continue from here: "saving_throws"
-    cha: (data["saving_throws"] as string[]).includes("Charisma"),
-    con: (data["saving_throws"] as string[]).includes("Constitution"),
-    dex: (data["saving_throws"] as string[]).includes("Dexterity"),
-    int: (data["saving_throws"] as string[]).includes("Intelligence"),
-    str: (data["saving_throws"] as string[]).includes("Strength"),
-    wis: (data["saving_throws"] as string[]).includes("Wisdom"),
-  },
-  senses: data["Senses"] || [],
-  size: data["size"],
-});
+
+      ...pipe((data["Moves"]["Starting Moves"] || []) as string[], (moves) =>
+        map(moves, (move) => ({
+          move,
+          learning: { method: "level", level: 0 },
+        }))
+      ),
+
+      ...pipe((data["Moves"]["egg"] || []) as string[], (moves) =>
+        map(moves, (move) => ({ move, learning: { method: "egg" } }))
+      ),
+    ],
+    skills: pipe(
+      [
+        "Acrobatics",
+        "Animal Handling",
+        "Arcana",
+        "Athletics",
+        "Deception",
+        "History",
+        "Insight",
+        "Intimidation",
+        "Investigation",
+        "Medicine",
+        "Nature",
+        "Perception",
+        "Performance",
+        "Persuasion",
+        "Religion",
+        "Sleight Of Hand",
+        "Stealth",
+        "Survival",
+      ],
+      (skills) =>
+        map(
+          skills,
+          (skill) =>
+            [
+              camelize(skill),
+              ((data["Skill"] || []) as string[]).find(
+                (proficientSkill) =>
+                  proficientSkill.toLowerCase() === skill.toLowerCase()
+              ) !== undefined,
+            ] as [string, boolean]
+        ),
+      (skillPairs) => fromPairs(skillPairs)
+    ) as PokemonStatBlock["skills"],
+    savingThrows: {
+      cha: savingThrows.includes("Charisma"),
+      con: savingThrows.includes("Constitution"),
+      dex: savingThrows.includes("Dexterity"),
+      int: savingThrows.includes("Intelligence"),
+      str: savingThrows.includes("Strength"),
+      wis: savingThrows.includes("Wisdom"),
+    },
+    senses: data["Senses"] || [],
+    size: data["size"],
+  };
+};
 
 export const proficientSkill = (skills: PokemonStatBlock["skills"]) => {
   const skillIfProficient = (skill: string, proficient: boolean) =>

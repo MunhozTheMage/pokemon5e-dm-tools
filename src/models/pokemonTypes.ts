@@ -70,8 +70,6 @@ export const multiplyTypes = (type1: string, type2?: string) => {
   const type1Mods = getTypeAffinityModifiers(type1);
   const type2Mods = type2 ? getTypeAffinityModifiers(type2) : undefined;
 
-  console.log(type1Mods, type2Mods);
-
   return toPairs(type1Mods).reduce(
     (obj, [currType, modifier]) => ({
       ...obj,

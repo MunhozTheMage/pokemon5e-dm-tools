@@ -40,6 +40,7 @@ import {
   imageUrlForPokemon,
   proficientSavingThrows,
   proficientSkill,
+  useBasicPokemon,
   useBasicPokemons,
   usePokemonQuery,
 } from "../models/pokemon";
@@ -53,6 +54,7 @@ import {
   typeWeakAgainst,
 } from "../models/pokemonTypes";
 import { groupBy, toPairs } from "remeda";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 
 const Info: ComponentType<{ label: string; content: ReactNode }> = ({
   label,
@@ -433,8 +435,9 @@ const PokemonStatblockDialog: ComponentType<
               )
             )
               .sort(([levelA], [levelB]) => Number(levelA) - Number(levelB))
-              .map(([level, moves]) => (
+              .map(([level, moves], i) => (
                 <Info
+                  key={i}
                   label={
                     level === "0" ? "Starting Moves" : `Level ${level} Moves`
                   }
@@ -455,9 +458,8 @@ const PokemonStatblockDialog: ComponentType<
   );
 };
 
-export const Landing = () => {
-  const [openPokemon, setOpenPokemon] = useState<string | undefined>(undefined);
-
+const PokemonsContent = () => {
+  const navigate = useNavigate();
   const [searchInputValue, setSearchInputValue] = useState("");
   const [searchValue, setSearchValue] = useState("");
 
@@ -503,11 +505,6 @@ export const Landing = () => {
     currentPage: page,
   });
 
-  const currentOpenPokemon = useMemo(
-    () => allPokemons.find((pokemon) => pokemon.id === openPokemon),
-    [allPokemons, openPokemon]
-  );
-
   const handleSearch = useCallback(() => {
     setSearchValue(searchInputValue);
     setPage(0);
@@ -521,14 +518,9 @@ export const Landing = () => {
     [prevPage, nextPage]
   );
 
-  const handleClosePokemonStats = useCallback(
-    () => setOpenPokemon(undefined),
-    [setOpenPokemon]
-  );
-
   const makeOpenPokemonHandler = useCallback(
-    (pokemonId: string) => () => setOpenPokemon(pokemonId),
-    [setOpenPokemon]
+    (pokemonId: string) => () => navigate(`${pokemonId}`),
+    [navigate]
   );
 
   useEvent("keydown", handleKeyPageNavigation);
@@ -613,16 +605,32 @@ export const Landing = () => {
           onChange={(_e, pageNumber) => setPage(pageNumber - 1)}
         />
       </PageView>
-
-      {currentOpenPokemon ? (
-        <PokemonStatblockDialog
-          pokemon={currentOpenPokemon}
-          onClose={handleClosePokemonStats}
-          maxWidth="md"
-          open
-          fullWidth
-        />
-      ) : null}
     </>
   );
 };
+
+export const PokemonDetailsPage = () => {
+  const { pokemonId } = useParams();
+  const navigate = useNavigate();
+
+  const pokemon = useBasicPokemon(pokemonId || "000");
+
+  return pokemon ? (
+    <PokemonStatblockDialog
+      pokemon={pokemon}
+      onClose={() => navigate("/pokemons")}
+      maxWidth="md"
+      open
+      fullWidth
+    />
+  ) : (
+    <></>
+  );
+};
+
+export const PokemonsPage = () => (
+  <>
+    <PokemonsContent />
+    <Outlet />
+  </>
+);

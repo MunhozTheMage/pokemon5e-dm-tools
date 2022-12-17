@@ -270,6 +270,9 @@ const fetchPokemonData = async (pokemon: BasicPokemon) => {
 
 export const useBasicPokemons = () => useMemo(() => allPokemon(), []);
 
+export const useBasicPokemon = (id: string) =>
+  useMemo(() => allPokemon().find((pokemon) => pokemon.id === id), [id]);
+
 export const usePokemonQuery = (pokemon: BasicPokemon) => {
   const fetchPokemon = useCallback(() => fetchPokemonData(pokemon), [pokemon]);
   return useQuery(`pokemon-${pokemon.id}`, fetchPokemon);

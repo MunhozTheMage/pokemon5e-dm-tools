@@ -15,7 +15,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <BrowserRouter basename="/pokemon5e-dm-tools">
+      <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/pokemons" />} />
 

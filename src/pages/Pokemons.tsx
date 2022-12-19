@@ -12,24 +12,15 @@ import {
   Divider,
   Grid,
   IconButton,
-  InputAdornment,
   Pagination,
   Stack,
-  TextField,
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import {
-  ComponentProps,
-  ReactNode,
-  useCallback,
-  useMemo,
-  useState,
-} from "react";
+import { ComponentProps, useCallback, useMemo, useState } from "react";
 
 import DescriptionIcon from "@mui/icons-material/Description";
 // import PokeballIcon from "@mui/icons-material/CatchingPokemon";
-import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 
 import { PageView } from "../components/PageView";
@@ -48,31 +39,15 @@ import { useEvent } from "react-use";
 import { ComponentType } from "../types/ComponentType";
 import {
   multiplyTypes,
-  typeImageUrl,
+  TypeImg,
   typeImmuneAgainst,
   typeResistantAgainst,
   typeWeakAgainst,
 } from "../models/pokemonTypes";
 import { groupBy, toPairs } from "remeda";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
-
-const Info: ComponentType<{ label: string; content: ReactNode }> = ({
-  label,
-  content,
-}) => (
-  <Box display="flex" flexDirection="column">
-    <Typography variant="overline">{label}</Typography>
-    <Box>{content}</Box>
-  </Box>
-);
-
-const TypeImg: ComponentType<{ type: string }> = ({ type }) => (
-  <img
-    src={typeImageUrl(type.toLowerCase())}
-    alt={type}
-    style={{ width: "90px", marginRight: "5px" }}
-  />
-);
+import { SearchBar } from "../components/SearchBar";
+import { InfoBlock } from "../components/InfoBlock";
 
 const PokemonStatblockDialog: ComponentType<
   Omit<ComponentProps<typeof Dialog>, "children"> & {
@@ -172,7 +147,7 @@ const PokemonStatblockDialog: ComponentType<
       >
         <Box display="flex" flexDirection={isMdBreakpoint ? "column" : "row"}>
           <Box flex="1 1 0">
-            <Info
+            <InfoBlock
               label="Type"
               content={pokemon.types.map((type, i) => (
                 <TypeImg key={i} type={type} />
@@ -180,22 +155,22 @@ const PokemonStatblockDialog: ComponentType<
             />
 
             <Stack direction="row" spacing={4}>
-              <Info
+              <InfoBlock
                 label="SR"
                 content={<Chip label={pokemon.sr} size="small" />}
               />
 
-              <Info
+              <InfoBlock
                 label="Size"
                 content={<Chip label={pokemon.size} size="small" />}
               />
 
-              <Info
+              <InfoBlock
                 label="AC"
                 content={<Chip label={pokemon.stats.ac} size="small" />}
               />
 
-              <Info
+              <InfoBlock
                 label="HP"
                 content={
                   <Chip
@@ -214,7 +189,7 @@ const PokemonStatblockDialog: ComponentType<
 
             <Grid container spacing={2}>
               <Grid item xs={4}>
-                <Info
+                <InfoBlock
                   label="Walk"
                   content={
                     <Chip label={`${pokemon.movement.walk}ft.`} size="small" />
@@ -223,7 +198,7 @@ const PokemonStatblockDialog: ComponentType<
               </Grid>
 
               <Grid item xs={4}>
-                <Info
+                <InfoBlock
                   label="Swim"
                   content={
                     <Chip label={`${pokemon.movement.swim}ft.`} size="small" />
@@ -232,7 +207,7 @@ const PokemonStatblockDialog: ComponentType<
               </Grid>
 
               <Grid item xs={4}>
-                <Info
+                <InfoBlock
                   label="Fly"
                   content={
                     <Chip label={`${pokemon.movement.fly}ft.`} size="small" />
@@ -241,7 +216,7 @@ const PokemonStatblockDialog: ComponentType<
               </Grid>
 
               <Grid item xs={4}>
-                <Info
+                <InfoBlock
                   label="Burrow"
                   content={
                     <Chip
@@ -253,7 +228,7 @@ const PokemonStatblockDialog: ComponentType<
               </Grid>
 
               <Grid item xs={4}>
-                <Info
+                <InfoBlock
                   label="Climb"
                   content={
                     <Chip label={`${pokemon.movement.climb}ft.`} size="small" />
@@ -269,43 +244,43 @@ const PokemonStatblockDialog: ComponentType<
             </Typography>
 
             <Grid container spacing={2}>
-              <Grid item xs={2}>
-                <Info
+              <Grid item xs={isMdBreakpoint ? 4 : 2}>
+                <InfoBlock
                   label="STR"
                   content={<Chip label={pokemon.stats.str} size="small" />}
                 />
               </Grid>
 
-              <Grid item xs={2}>
-                <Info
+              <Grid item xs={isMdBreakpoint ? 4 : 2}>
+                <InfoBlock
                   label="DEX"
                   content={<Chip label={pokemon.stats.dex} size="small" />}
                 />
               </Grid>
 
-              <Grid item xs={2}>
-                <Info
+              <Grid item xs={isMdBreakpoint ? 4 : 2}>
+                <InfoBlock
                   label="CON"
                   content={<Chip label={pokemon.stats.con} size="small" />}
                 />
               </Grid>
 
-              <Grid item xs={2}>
-                <Info
+              <Grid item xs={isMdBreakpoint ? 4 : 2}>
+                <InfoBlock
                   label="INT"
                   content={<Chip label={pokemon.stats.int} size="small" />}
                 />
               </Grid>
 
-              <Grid item xs={2}>
-                <Info
+              <Grid item xs={isMdBreakpoint ? 4 : 2}>
+                <InfoBlock
                   label="WIS"
                   content={<Chip label={pokemon.stats.wis} size="small" />}
                 />
               </Grid>
 
-              <Grid item xs={2}>
-                <Info
+              <Grid item xs={isMdBreakpoint ? 4 : 2}>
+                <InfoBlock
                   label="CHA"
                   content={<Chip label={pokemon.stats.cha} size="small" />}
                 />
@@ -323,7 +298,7 @@ const PokemonStatblockDialog: ComponentType<
                 <Grid container spacing={2}>
                   {skills && skills.length > 0 && (
                     <Grid item xs={6}>
-                      <Info
+                      <InfoBlock
                         label="Skills"
                         content={
                           <>
@@ -343,7 +318,7 @@ const PokemonStatblockDialog: ComponentType<
 
                   {savingThrows && savingThrows.length > 0 && (
                     <Grid item xs={6}>
-                      <Info
+                      <InfoBlock
                         label="Saving Throws"
                         content={
                           <>
@@ -377,7 +352,7 @@ const PokemonStatblockDialog: ComponentType<
             </Typography>
 
             {weakAgainst.length > 0 && (
-              <Info
+              <InfoBlock
                 label="Weakness"
                 content={weakAgainst.map((type, i) => (
                   <TypeImg key={i} type={type} />
@@ -386,7 +361,7 @@ const PokemonStatblockDialog: ComponentType<
             )}
 
             {resistantAgainst.length > 0 && (
-              <Info
+              <InfoBlock
                 label="Resistance"
                 content={resistantAgainst.map((type, i) => (
                   <TypeImg key={i} type={type} />
@@ -395,7 +370,7 @@ const PokemonStatblockDialog: ComponentType<
             )}
 
             {immuneAgainst.length > 0 && (
-              <Info
+              <InfoBlock
                 label="Immunity"
                 content={immuneAgainst.map((type, i) => (
                   <TypeImg key={i} type={type} />
@@ -409,7 +384,7 @@ const PokemonStatblockDialog: ComponentType<
               Combat
             </Typography>
 
-            <Info
+            <InfoBlock
               label="Abilities"
               content={pokemon.abilities.map((ability, i) => (
                 <Chip
@@ -436,7 +411,7 @@ const PokemonStatblockDialog: ComponentType<
             )
               .sort(([levelA], [levelB]) => Number(levelA) - Number(levelB))
               .map(([level, moves], i) => (
-                <Info
+                <InfoBlock
                   key={i}
                   label={
                     level === "0" ? "Starting Moves" : `Level ${level} Moves`
@@ -460,7 +435,6 @@ const PokemonStatblockDialog: ComponentType<
 
 const PokemonsContent = () => {
   const navigate = useNavigate();
-  const [searchInputValue, setSearchInputValue] = useState("");
   const [searchValue, setSearchValue] = useState("");
 
   const isLgBreakpoint = useMediaQuery((theme) =>
@@ -493,6 +467,7 @@ const PokemonsContent = () => {
     () => Math.ceil(filteredPokemons.length / 12),
     [filteredPokemons.length]
   );
+
   const {
     value: page,
     set: setPage,
@@ -505,10 +480,13 @@ const PokemonsContent = () => {
     currentPage: page,
   });
 
-  const handleSearch = useCallback(() => {
-    setSearchValue(searchInputValue);
-    setPage(0);
-  }, [setSearchValue, setPage, searchInputValue]);
+  const handleSearch = useCallback(
+    (searchValue: string) => {
+      setSearchValue(searchValue);
+      setPage(0);
+    },
+    [setSearchValue, setPage]
+  );
 
   const handleKeyPageNavigation = useCallback(
     (e: any) => {
@@ -535,26 +513,7 @@ const PokemonsContent = () => {
           alignItems: "center",
         }}
       >
-        <TextField
-          label="Search by Name"
-          size="small"
-          value={searchInputValue}
-          onChange={(e) => setSearchInputValue(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton size="small" onClick={handleSearch}>
-                  <SearchIcon />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-          sx={{
-            width: "100%",
-            marginBottom: "20px",
-          }}
-        />
+        <SearchBar label="Search by Name" onSearch={handleSearch} />
 
         <Grid container spacing={2} sx={{ marginBottom: "20px" }}>
           {currentPokemons.map((pokemon) => (

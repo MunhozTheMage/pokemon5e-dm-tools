@@ -275,7 +275,9 @@ export const useBasicPokemon = (id: string) =>
 
 export const usePokemonQuery = (pokemon: BasicPokemon) => {
   const fetchPokemon = useCallback(() => fetchPokemonData(pokemon), [pokemon]);
-  return useQuery(`pokemon-${pokemon.id}`, fetchPokemon);
+  return useQuery(`pokemon-${pokemon.id}`, fetchPokemon, {
+    cacheTime: 30 * 60 * 1000,
+  });
 };
 
 export const PokemonImage: ComponentType<

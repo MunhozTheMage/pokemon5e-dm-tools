@@ -12,6 +12,7 @@ import {
 
 import PokeballIcon from "@mui/icons-material/CatchingPokemon";
 import MenuIcon from "@mui/icons-material/Menu";
+import FlameIcon from "@mui/icons-material/Whatshot";
 
 import { PageView } from "./PageView";
 import { LinkButton } from "./LinkButton";
@@ -22,7 +23,18 @@ const pages: {
   label: string;
   path: string;
   icon: JSX.Element;
-}[] = [];
+}[] = [
+  {
+    label: "Pokémons",
+    path: "/pokemons",
+    icon: <PokeballIcon />,
+  },
+  {
+    label: "Moves",
+    path: "/moves",
+    icon: <FlameIcon />,
+  },
+];
 
 export const AppHeader = () => {
   const [isPagesDrawerOpen, setIsPagesDrawerOpen] = useBoolean(false);

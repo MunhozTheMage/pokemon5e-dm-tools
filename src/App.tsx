@@ -4,8 +4,9 @@ import { QueryClient, QueryClientProvider } from "react-query";
 
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AppHeaderLayout } from "./layouts/AppHeaderLayout";
+import { MovesPage } from "./pages/Moves";
 
-import { PokemonsPage, PokemonDetailsPage } from "./pages/Landing";
+import { PokemonsPage, PokemonDetailsPage } from "./pages/Pokemons";
 
 import { theme } from "./theme";
 
@@ -23,6 +24,8 @@ const App = () => (
             <Route path="/pokemons" element={<PokemonsPage />}>
               <Route path=":pokemonId" element={<PokemonDetailsPage />} />
             </Route>
+
+            <Route path="/moves" element={<MovesPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

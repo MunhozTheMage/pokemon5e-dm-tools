@@ -1,5 +1,6 @@
 import { toPairs } from "remeda";
 import _typeAffinities from "../data/types.json";
+import { ComponentType } from "../types/ComponentType";
 
 type TypeMultipliers = { [k: string]: number };
 
@@ -91,3 +92,11 @@ export const typeResistantAgainst = (multipliers: TypeMultipliers) =>
   types.filter(
     (type) => (multipliers[type] || 1) !== 0 && (multipliers[type] || 1) < 1
   );
+
+export const TypeImg: ComponentType<{ type: string }> = ({ type }) => (
+  <img
+    src={typeImageUrl(type.toLowerCase())}
+    alt={type}
+    style={{ width: "90px", marginRight: "5px" }}
+  />
+);

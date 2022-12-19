@@ -1,6 +1,9 @@
 import {
   Box,
   Collapse,
+  Dialog,
+  DialogContent,
+  DialogTitle,
   IconButton,
   Pagination,
   Paper,
@@ -14,7 +17,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { useCallback, useMemo, useState } from "react";
+import { ComponentProps, useCallback, useMemo, useState } from "react";
 import { useBoolean, useEvent } from "react-use";
 
 import { PageView } from "../components/PageView";
@@ -27,8 +30,14 @@ import { ComponentType } from "../types/ComponentType";
 
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import CloseIcon from "@mui/icons-material/Close";
 
-const MoveRow: ComponentType<{ move: string }> = ({ move }) => {
+import { Outlet, useNavigate, useParams } from "react-router-dom";
+
+const MoveRow: ComponentType<{
+  move: string;
+  dialogMode?: boolean;
+}> = ({ move, dialogMode = false }) => {
   const [open, toggleOpen] = useBoolean(false);
   const { data: moveData } = useMoveQuery(move);
 
@@ -36,18 +45,24 @@ const MoveRow: ComponentType<{ move: string }> = ({ move }) => {
     (theme as any).breakpoints.down("md")
   );
 
+  const showContent = open || dialogMode;
+
   if (!moveData) return <></>;
 
   return !isMdBreakpoint ? (
     <>
       <TableRow sx={{ "& td": { borderBottom: "unset" } }}>
+        {!dialogMode && (
+          <TableCell>
+            <IconButton onClick={() => toggleOpen()}>
+              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </IconButton>
+          </TableCell>
+        )}
+        {!dialogMode && <TableCell>{moveData.name}</TableCell>}
         <TableCell>
-          <IconButton onClick={() => toggleOpen()}>
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
+          {moveData.power.length > 0 ? moveData.power.join(" / ") : "N/A"}
         </TableCell>
-        <TableCell>{moveData.name}</TableCell>
-        <TableCell>{moveData.power.join(" / ")}</TableCell>
         <TableCell>{moveData.time}</TableCell>
         <TableCell>{moveData.duration}</TableCell>
         <TableCell>{moveData.range}</TableCell>
@@ -58,12 +73,12 @@ const MoveRow: ComponentType<{ move: string }> = ({ move }) => {
       </TableRow>
 
       <TableRow sx={{ margin: "0" }}>
-        <TableCell sx={{ padding: "0" }} />
+        {!dialogMode && <TableCell sx={{ padding: "0" }} />}
         <TableCell
           colSpan={7}
-          sx={{ transition: "200ms", ...(open ? {} : { padding: "0" }) }}
+          sx={{ transition: "200ms", ...(showContent ? {} : { padding: "0" }) }}
         >
-          <Collapse in={open}>
+          <Collapse in={showContent}>
             <Typography
               sx={
                 Boolean(moveData.scalingDescription)
@@ -82,25 +97,36 @@ const MoveRow: ComponentType<{ move: string }> = ({ move }) => {
     </>
   ) : (
     <>
-      <TableRow
-        sx={{ "& td": { borderBottom: "unset" } }}
-        onClick={() => toggleOpen()}
-      >
-        <TableCell>{moveData.name}</TableCell>
-        <TableCell align="right">
-          <TypeImg type={moveData.type.toLowerCase()} />
-        </TableCell>
-      </TableRow>
+      {!dialogMode && (
+        <TableRow
+          sx={{ "& td": { borderBottom: "unset" } }}
+          onClick={() => toggleOpen()}
+        >
+          <TableCell>{moveData.name}</TableCell>
+          <TableCell align="right">
+            <TypeImg type={moveData.type.toLowerCase()} />
+          </TableCell>
+        </TableRow>
+      )}
 
       <TableRow sx={{ margin: "0" }}>
         <TableCell
           colSpan={2}
-          sx={{ transition: "200ms", ...(open ? {} : { padding: "0" }) }}
+          sx={{ transition: "200ms", ...(showContent ? {} : { padding: "0" }) }}
         >
-          <Collapse in={open}>
+          <Collapse in={showContent}>
             <TableContainer component={Paper} sx={{ marginBottom: "20px" }}>
               <Table>
                 <TableBody>
+                  {dialogMode && (
+                    <TableRow>
+                      <TableCell>Type</TableCell>
+                      <TableCell align="right">
+                        <TypeImg type={moveData.type.toLowerCase()} />
+                      </TableCell>
+                    </TableRow>
+                  )}
+
                   <TableRow>
                     <TableCell>PP</TableCell>
                     <TableCell align="right">{moveData.pp}</TableCell>
@@ -109,7 +135,9 @@ const MoveRow: ComponentType<{ move: string }> = ({ move }) => {
                   <TableRow>
                     <TableCell>Power</TableCell>
                     <TableCell align="right">
-                      {moveData.power.join(" / ")}
+                      {moveData.power.length > 0
+                        ? moveData.power.join(" / ")
+                        : "N/A"}
                     </TableCell>
                   </TableRow>
 
@@ -150,6 +178,71 @@ const MoveRow: ComponentType<{ move: string }> = ({ move }) => {
     </>
   );
 };
+
+const MoveDialog: ComponentType<
+  ComponentProps<typeof Dialog> & {
+    onClose: () => void;
+    move?: string;
+    compact?: boolean;
+  }
+> = ({ onClose, open, move, compact, ...props }) => (
+  <Dialog open={open && !!move} {...props}>
+    <DialogTitle>
+      <Typography>{move}</Typography>
+      <IconButton
+        aria-label="close"
+        onClick={onClose}
+        sx={{
+          position: "absolute",
+          right: 8,
+          top: 8,
+          color: (theme) => theme.palette.grey[500],
+        }}
+      >
+        <CloseIcon />
+      </IconButton>
+    </DialogTitle>
+
+    {!!move && (
+      <DialogContent
+        sx={{
+          "&::-webkit-scrollbar": {
+            width: "0.6em",
+          },
+          "&::-webkit-scrollbar-track": {
+            boxShadow: "inset 0 0 6px rgba(0,0,0,0.00)",
+            webkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.00)",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "rgba(0,0,0,.3)",
+            borderRadius: "3px",
+          },
+        }}
+      >
+        <Table>
+          <TableHead>
+            <TableRow>
+              {!compact && (
+                <>
+                  <TableCell>Power</TableCell>
+                  <TableCell>Time</TableCell>
+                  <TableCell>Duration</TableCell>
+                  <TableCell>Range</TableCell>
+                  <TableCell>PP</TableCell>
+                  <TableCell>Type</TableCell>
+                </>
+              )}
+            </TableRow>
+          </TableHead>
+
+          <TableBody>
+            <MoveRow move={move} dialogMode />
+          </TableBody>
+        </Table>
+      </DialogContent>
+    )}
+  </Dialog>
+);
 
 export const MovesContent = () => {
   const ITEMS_PER_PAGE = 25;
@@ -254,4 +347,31 @@ export const MovesContent = () => {
   );
 };
 
-export const MovesPage = () => <MovesContent />;
+export const MoveDetailsPage = () => {
+  const navigate = useNavigate();
+  const { move: uriMove } = useParams();
+
+  const isMdBreakpoint = useMediaQuery((theme) =>
+    (theme as any).breakpoints.down("md")
+  );
+
+  const move = useMemo(() => uriMove && decodeURI(uriMove), [uriMove]);
+
+  return (
+    <MoveDialog
+      maxWidth="md"
+      fullWidth
+      move={move}
+      onClose={() => navigate("/moves")}
+      compact={isMdBreakpoint}
+      open
+    />
+  );
+};
+
+export const MovesPage = () => (
+  <>
+    <MovesContent />
+    <Outlet />
+  </>
+);

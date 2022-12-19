@@ -12,6 +12,7 @@ import {
   Divider,
   Grid,
   IconButton,
+  Link,
   Pagination,
   Stack,
   Typography,
@@ -417,12 +418,24 @@ const PokemonStatblockDialog: ComponentType<
                     level === "0" ? "Starting Moves" : `Level ${level} Moves`
                   }
                   content={moves.map((move, i) => (
-                    <Chip
+                    <Link
                       key={i}
-                      label={move.move}
-                      size="small"
-                      sx={{ marginRight: "5px", marginBottom: "5px" }}
-                    />
+                      href={`/moves/${encodeURI(move.move)}`}
+                      sx={{ textDecoration: "none" }}
+                    >
+                      <Chip
+                        label={move.move}
+                        size="small"
+                        sx={{
+                          marginRight: "5px",
+                          marginBottom: "5px",
+                          cursor: "pointer",
+                          "&:hover": {
+                            backgroundColor: "rgb(255, 255, 255, 0.05)",
+                          },
+                        }}
+                      />
+                    </Link>
                   ))}
                 />
               ))}

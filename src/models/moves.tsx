@@ -17,6 +17,16 @@ type MoveData = {
 
 export const moves = _moves as string[];
 
+export const learningMethodsDescription = {
+  egg: "Egg Move",
+  "level-0": "Starting Move",
+  "level-2": "Level 2",
+  "level-6": "Level 6",
+  "level-10": "Level 10",
+  "level-14": "Level 14",
+  "level-18": "Level 18",
+};
+
 const moveUrl = (move: string) => MOVE_DATA_PATH.replace("{{name}}", move);
 
 const moveFromDataJson = (move: string, moveData: any): MoveData => ({

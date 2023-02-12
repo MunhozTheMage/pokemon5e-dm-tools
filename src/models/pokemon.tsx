@@ -1,10 +1,20 @@
+import { capitalize } from "@mui/material";
 import { ComponentProps, useCallback, useMemo } from "react";
 import { useQuery } from "react-query";
-import { pipe, toPairs, map, flatten, fromPairs, filter } from "remeda";
+import {
+  pipe,
+  toPairs,
+  map,
+  flatten,
+  fromPairs,
+  filter,
+  groupBy,
+} from "remeda";
 
 import _pokemonData from "../data/pokemons.json";
 import { ComponentType } from "../types/ComponentType";
 import { POKEMON_DATA_PATH, POKEMON_IMAGE_PATH } from "../vars";
+import { skills } from "./dnd";
 import { camelize } from "./string";
 
 export type BasicPokemon = {
@@ -137,26 +147,7 @@ const pokemonFromDataJson = (
       ),
     ],
     skills: pipe(
-      [
-        "Acrobatics",
-        "Animal Handling",
-        "Arcana",
-        "Athletics",
-        "Deception",
-        "History",
-        "Insight",
-        "Intimidation",
-        "Investigation",
-        "Medicine",
-        "Nature",
-        "Perception",
-        "Performance",
-        "Persuasion",
-        "Religion",
-        "Sleight Of Hand",
-        "Stealth",
-        "Survival",
-      ],
+      skills,
       (skills) =>
         map(
           skills,
@@ -183,6 +174,72 @@ const pokemonFromDataJson = (
     size: data["size"],
   };
 };
+
+export const generateJsonFromFormData = (formData: any) => ({
+  name: formData.name,
+  json: JSON.stringify({
+    index: Number(formData.index),
+    Type: [formData.type1, formData.type2]
+      .filter((type) => typeof type === "string")
+      .map((type) => capitalize(type)),
+    SR: Number(formData.sr),
+    AC: Number(formData.ac),
+    HP: Number(formData.baseHp),
+    size: capitalize(formData.size),
+    "Hit Dice": Number(formData.hitDie.slice(1)),
+    WSp: Number(formData.walkSpd),
+    "Burrowing Speed": Number(formData.burrowSpd),
+    "Climbing Speed": Number(formData.climbSpd),
+    Fsp: Number(formData.flySpd),
+    Ssp: Number(formData.swimSpd),
+    attributes: {
+      CHA: Number(formData.cha),
+      CON: Number(formData.con),
+      DEX: Number(formData.dex),
+      INT: Number(formData.int),
+      STR: Number(formData.str),
+      WIS: Number(formData.wis),
+    },
+    saving_throws: [
+      ["Charisma", formData.chaProf],
+      ["Constitution", formData.conProf],
+      ["Dexterity", formData.dexProf],
+      ["Intelligence", formData.intProf],
+      ["Strength", formData.strProf],
+      ["Wisdom", formData.wisProf],
+    ]
+      .filter(([_name, value]) => Boolean(value))
+      .map(([name]) => name),
+    Skill: formData.skillProfs,
+    Abilities: formData.abilities
+      .filter((ability: any) => !ability.hidden)
+      .map((ability: any) => ability.name),
+    "Hidden Ability": formData.abilities.find((ability: any) => ability.hidden)
+      ?.name,
+    Moves: {
+      Level: fromPairs(
+        toPairs(
+          groupBy(
+            formData.moves.filter(
+              (move: any) =>
+                move.learned.includes("level") && !move.learned.includes("0")
+            ),
+            (move: any) => move.learned.split("-")[1]
+          )
+        ).map(([level, moves]) => [
+          level,
+          moves.map((move: any) => move.name),
+        ]) as any
+      ),
+      "Starting Moves": formData.moves
+        .filter((move: any) => move.learned === "level-0")
+        .map((move: any) => move.name),
+      egg: formData.moves
+        .filter((move: any) => move.learned === "egg")
+        .map((move: any) => move.name),
+    },
+  }),
+});
 
 export const proficientSkill = (skills: PokemonStatBlock["skills"]) => {
   const skillIfProficient = (skill: string, proficient: boolean) =>

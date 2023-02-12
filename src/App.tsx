@@ -6,7 +6,11 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AppHeaderLayout } from "./layouts/AppHeaderLayout";
 import { MoveDetailsPage, MovesPage } from "./pages/Moves";
 
-import { PokemonsPage, PokemonDetailsPage } from "./pages/Pokemons";
+import {
+  PokemonsPage,
+  PokemonDetailsPage,
+  PokemonCreationPage,
+} from "./pages/Pokemons";
 
 import { theme } from "./theme";
 
@@ -23,6 +27,7 @@ const App = () => (
           <Route element={<AppHeaderLayout />}>
             <Route path="/pokemons" element={<PokemonsPage />}>
               <Route path=":pokemonId" element={<PokemonDetailsPage />} />
+              <Route path="create" element={<PokemonCreationPage />} />
             </Route>
 
             <Route path="/moves" element={<MovesPage />}>

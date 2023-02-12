@@ -23,6 +23,7 @@ import { ComponentProps, useCallback, useMemo, useState } from "react";
 import DescriptionIcon from "@mui/icons-material/Description";
 // import PokeballIcon from "@mui/icons-material/CatchingPokemon";
 import CloseIcon from "@mui/icons-material/Close";
+import AddIcon from "@mui/icons-material/Add";
 
 import { PageView } from "../components/PageView";
 import { useArrayPagination } from "../lib/hooks/useArrayPagination";
@@ -49,6 +50,9 @@ import { groupBy, toPairs } from "remeda";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { SearchBar } from "../components/SearchBar";
 import { InfoBlock } from "../components/InfoBlock";
+import { FixedActionButton } from "../components/FixedActionButton";
+import { Navigate } from "../lib/hooks/componentVersion/Navigate";
+import { PokemonCreationDialog } from "./Pokemons/PokemonCreationDialog";
 
 const PokemonStatblockDialog: ComponentType<
   Omit<ComponentProps<typeof Dialog>, "children"> & {
@@ -600,9 +604,30 @@ export const PokemonDetailsPage = () => {
   );
 };
 
+export const PokemonCreationPage = () => {
+  const navigate = useNavigate();
+
+  return (
+    <PokemonCreationDialog
+      onClose={() => navigate("/pokemons")}
+      maxWidth="md"
+      open
+      fullWidth
+    />
+  );
+};
+
 export const PokemonsPage = () => (
   <>
     <PokemonsContent />
     <Outlet />
+
+    <Navigate>
+      {(navigate) => (
+        <FixedActionButton onClick={() => navigate("create")}>
+          <AddIcon />
+        </FixedActionButton>
+      )}
+    </Navigate>
   </>
 );
